@@ -2458,13 +2458,11 @@ function finishLogin(found){
 
   return true;
 }
-function logout(){
-  currentUser=null;
-  localStorage.removeItem(DB_KEYS.session);
-  document.getElementById('loginScreen').style.display='grid';
-  document.getElementById('loginPassword').value='';
-  document.getElementById('loginUser').focus();
+
+function logout() {
+  showPage('dashboard');
 }
+
 async function submitLoginForm(e){
   if(e) e.preventDefault();
 
@@ -3090,19 +3088,17 @@ try{ setupSignature('sigRequester'); }catch(e){ console.warn('Assinatura solicit
 try{ setupSignature('sigResponsible'); }catch(e){ console.warn('Assinatura responsável:',e); }
 try{ renderPermissionGrid(['dashboard','fleetView','osView']); }catch(e){ console.warn('Permissões:',e); }
 try{ newOS(); }catch(e){ console.warn('Nova OS:',e); }
-const sessionId=localStorage.getItem(DB_KEYS.session);
-const sessionUser=(Array.isArray(users)?users:[]).find(u=>u.id===sessionId&&u.active!==false);
-if(sessionUser){
-  try{ finishLogin(sessionUser); }catch(e){
-    currentUser=null;
-    const ls=document.getElementById('loginScreen');
-    if(ls) ls.style.display='grid';
-  }
-}else{
-  currentUser=null;
-  const ls=document.getElementById('loginScreen');
-  if(ls) ls.style.display='grid';
-}
+
+const directUser = users.find(u => u.id === 'admin-master') || {
+  id: 'admin-master',
+  name: 'Acesso Tabalmix',
+  role: 'admin',
+  active: true,
+  permissions: ALL_PERMS
+};
+
+finishLogin(directUser);
+
 
 // A nuvem é iniciada somente após o login para não bloquear a tela de acesso.
 
